@@ -96,6 +96,7 @@ void SimpleTrajectoryGenerator::initialise(
       max_vel_y = std::max(std::min(max_vel_y, dist / sim_time_), min_vel_y);
 
       // if we use continous acceleration, we can sample the max velocity we can reach in sim_time_
+      /*
       max_vel[0] = std::min(max_vel_x, vel[0] + acc_lim[0] * sim_time_);
       max_vel[1] = std::min(max_vel_y, vel[1] + acc_lim[1] * sim_time_);
       max_vel[2] = std::min(max_vel_th, vel[2] + acc_lim[2] * sim_time_);
@@ -103,6 +104,9 @@ void SimpleTrajectoryGenerator::initialise(
       min_vel[0] = std::max(min_vel_x, vel[0] - acc_lim[0] * sim_time_);
       min_vel[1] = std::max(min_vel_y, vel[1] - acc_lim[1] * sim_time_);
       min_vel[2] = std::max(min_vel_th, vel[2] - acc_lim[2] * sim_time_);
+      */
+    }
+    /*
     } else {
       // with dwa do not accelerate beyond the first step, we only sample within velocities we reach in sim_period
       max_vel[0] = std::min(max_vel_x, vel[0] + acc_lim[0] * sim_period_);
@@ -113,11 +117,15 @@ void SimpleTrajectoryGenerator::initialise(
       min_vel[1] = std::max(min_vel_y, vel[1] - acc_lim[1] * sim_period_);
       min_vel[2] = std::max(min_vel_th, vel[2] - acc_lim[2] * sim_period_);
     }
+    */
 
     Eigen::Vector3f vel_samp = Eigen::Vector3f::Zero();
-    VelocityIterator x_it(min_vel[0], max_vel[0], vsamples[0]);
-    VelocityIterator y_it(min_vel[1], max_vel[1], vsamples[1]);
-    VelocityIterator th_it(min_vel[2], max_vel[2], vsamples[2]);
+    //VelocityIterator x_it(min_vel[0], max_vel[0], vsamples[0]);
+    //VelocityIterator y_it(min_vel[1], max_vel[1], vsamples[1]);
+    //VelocityIterator th_it(min_vel[2], max_vel[2], vsamples[2]);
+    VelocityIterator x_it(min_vel_x, max_vel_x, vsamples[0]);
+    VelocityIterator y_it(min_vel_y, max_vel_y, vsamples[1]);
+    VelocityIterator th_it(min_vel_th, max_vel_th, vsamples[2]);
     for(; !x_it.isFinished(); x_it++) {
       vel_samp[0] = x_it.getVelocity();
       for(; !y_it.isFinished(); y_it++) {
@@ -125,8 +133,8 @@ void SimpleTrajectoryGenerator::initialise(
         for(; !th_it.isFinished(); th_it++) {
           vel_samp[2] = th_it.getVelocity();
           //ROS_DEBUG("Sample %f, %f, %f", vel_samp[0], vel_samp[1], vel_samp[2]);
-          if(std::abs(vel_samp[0]) / 0.5 +std::abs(vel_samp[1]) / 0.5 +std::abs(vel_samp[2]) / 0.968<= 1){
-          sample_params_.push_back(vel_samp);
+          if(std::abs(vel_samp[0]) / limits->max_vel_x + std::abs(vel_samp[1]) / limits->max_vel_y + std::abs(vel_samp[2]) / limits-> max_rot_vel <= 1.01){
+            sample_params_.push_back(vel_samp);
           }
 
         }
