@@ -125,10 +125,9 @@ void SimpleTrajectoryGenerator::initialise(
         for(; !th_it.isFinished(); th_it++) {
           vel_samp[2] = th_it.getVelocity();
           //ROS_DEBUG("Sample %f, %f, %f", vel_samp[0], vel_samp[1], vel_samp[2]);
-          if(std::abs(vel_samp[0] / 0.5 )+std::abs(vel_samp[1] / 0.5 )+std::abs(vel_samp[2] / 0. 968)<= 1){
-          //if check and build up
+          if(std::abs(vel_samp[0]) / 0.5 +std::abs(vel_samp[1]) / 0.5 +std::abs(vel_samp[2]) / 0.968<= 1){
           sample_params_.push_back(vel_samp);
-          
+          }
 
         }
         th_it.reset();
